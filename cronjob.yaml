@@ -1,0 +1,22 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: redis-backup-cronjob
+  namespace: redis-backup
+spec:
+  schedule: "0 0/12 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: redis-backup-container
+              image: public.ecr.aws/m8n7w3l2/redis-copy:v2.3
+              env:
+                - name: S3_BUCKET_NAME
+                  value: "S3_NAME"
+                - name: REGION
+                  value: "sa-east-1"
+              command: ["/bin/sh", "-c"]
+              args: ["./redis.sh"]
+          restartPolicy: OnFailure
